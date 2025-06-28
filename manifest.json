@@ -1,0 +1,16 @@
+{
+  "name": "时间追踪器",
+  "short_name": "时间追踪",
+  "description": "一个用于记录和分析任务时间的工具。",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1a73e8",
+  "icons": [
+    {
+      "src": "icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>时间追踪器</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root {
+            --bg-color: #f0f2f5;
+            --card-bg-color: #fff;
+            --text-color: #333;
+            --secondary-text-color: #5f6368;
+            --border-color: #f0f0f0;
+            --primary-color: #1a73e8;
+            --primary-hover-color: #155ab6;
+            --danger-color: #d93025;
+            --danger-hover-color: #a52714;
+            --button-bg-color: #e8f0fe;
+            --button-text-color: var(--primary-color);
+        }
+
+        body.dark-mode {
+            --bg-color: #202124;
+            --card-bg-color: #303134;
+            --text-color: #e8eaed;
+            --secondary-text-color: #9aa0a6;
+            --border-color: #5f6368;
+            --button-bg-color: #3c4043;
+            --button-text-color: #e8eaed;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .header-container {
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background-color: var(--card-bg-color);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            overflow: hidden;
+            transition: background-color 0.3s;
+        }
+        .card {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .card:last-child {
+            border-bottom: none;
+        }
+        h1, h2 {
+            text-align: center;
+            color: var(--primary-color);
+        }
+        h1 { margin: 0; font-size: 1.5em; display: flex; align-items: center; gap: 10px;}
+        h2 {
+            color: var(--text-color);
+            font-size: 1.2em;
+            margin-top: 0;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: var(--secondary-text-color);
+        }
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            box-sizing: border-box;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+        input[type=number]::-webkit-outer-spin-button,
+        input[type=number]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            background-color: var(--primary-color);
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        form button {
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: var(--primary-hover-color);
+        }
+        button.secondary {
+            background-color: var(--danger-color);
+        }
+        button.secondary:hover {
+            background-color: var(--danger-hover-color);
+        }
+        .status-display, .success-message {
+            padding: 15px;
+            border-radius: 4px;
+            text-align: center;
+            line-height: 1.6;
+        }
+        .status-display {
+            background-color: rgba(26, 115, 232, 0.1);
+        }
+        .status-display p, .success-message p { margin: 5px 0; }
+        #live-timer {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: 10px 0;
+            letter-spacing: 2px;
+        }
+        .success-message {
+            background-color: #e6f4ea;
+            color: #1e8e3e;
+            font-weight: 500;
+            display: none;
+            margin-bottom: 15px;
+        }
+        body.dark-mode .success-message {
+            background-color: #344a3a;
+            color: #a2d2b0;
+        }
+        .time-display-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+        .success-message .time-display-container {
+            margin: 15px 0 10px 0;
+        }
+        .time-block {
+            text-align: center;
+        }
+        .time-label {
+            font-size: 0.8em;
+            color: var(--secondary-text-color);
+            display: block;
+        }
+        .time-value {
+            font-size: 1.1em;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 8px;
+            text-align: left;
+            vertical-align: middle;
+        }
+        th {
+            background-color: var(--bg-color);
+        }
+        .theme-switch-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        #theme-icon {
+            font-size: 1.5em;
+        }
+        .theme-switch {
+            display: inline-block;
+            height: 24px;
+            position: relative;
+            width: 44px;
+        }
+        .theme-switch input { display: none; }
+        .slider {
+            background-color: #ccc;
+            bottom: 0;
+            cursor: pointer;
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        .slider:before {
+            background-color: #fff;
+            bottom: 2px;
+            content: "";
+            height: 20px;
+            left: 2px;
+            position: absolute;
+            transition: .4s;
+            width: 20px;
+            border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--primary-color); }
+        input:checked + .slider:before { transform: translateX(20px); }
+        .chart-button-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .chart-button-group button {
+            flex-grow: 1;
+            background-color: var(--button-bg-color);
+            color: var(--button-text-color);
+            font-weight: 500;
+        }
+        .chart-button-group button.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        .chart-wrapper {
+            height: 300px; 
+            position: relative;
+        }
+        /* --- 新增：可折叠面板的样式 --- */
+        details {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 20px;
+            background-color: var(--card-bg-color);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        details[open] {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        summary {
+            font-weight: 500;
+            font-size: 1.2em;
+            padding: 20px;
+            cursor: pointer;
+            list-style: none; /* 隐藏默认的三角箭头 */
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        summary::-webkit-details-marker {
+            display: none; /* 隐藏默认的三角箭头 (Chrome/Safari) */
+        }
+        summary::before { /* 自定义箭头 */
+            content: '▶';
+            font-size: 0.8em;
+            transition: transform 0.2s;
+        }
+        details[open] > summary::before {
+            transform: rotate(90deg);
+        }
+
+    </style>
+</head>
+<body>
+    <div class="header-container">
+        <h1><i class="bi bi-stopwatch-fill"></i> 时间追踪器</h1>
+        <div class="theme-switch-wrapper">
+            <span id="theme-icon"></span>
+            <label class="theme-switch" for="darkModeToggle">
+                <input type="checkbox" id="darkModeToggle">
+                <span class="slider"></span>
+            </label>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="card" id="control-panel"></div>
+    </div>
+
+    <details>
+        <summary><i class="bi bi-graph-up-arrow"></i> 图表与分析</summary>
+        <div class="container" style="box-shadow: none; margin-bottom: 0; border-radius: 0;">
+            <div class="card">
+                <h2 id="chartTitle">百分比时间差趋势图</h2>
+                <div class="chart-button-group">
+                    <button id="showPercentageChartBtn" class="active"><i class="bi bi-percent"></i> 百分比时间差</button>
+                    <button id="showDifferenceChartBtn"><i class="bi bi-bar-chart-line-fill"></i> 绝对时间差</button>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="trendChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </details>
+    
+    <details>
+        <summary><i class="bi bi-table"></i> 数据管理</summary>
+        <div class="container" style="box-shadow: none; margin-bottom: 0; border-radius: 0;">
+            <div class="card">
+                <div id="data-management-table"></div>
+                <div class="form-group" style="margin-top: 15px;">
+                    <button id="deleteSelectedBtn" class="secondary"><i class="bi bi-trash3-fill"></i> 删除选中记录</button>
+                </div>
+            </div>
+        </div>
+    </details>
+
+    <script>
+        const controlPanel = document.getElementById('control-panel');
+        const chartCanvas = document.getElementById('trendChart').getContext('2d');
+        const dataManagementTable = document.getElementById('data-management-table');
+        const deleteSelectedBtn = document.getElementById('deleteSelectedBtn');
+        const themeToggle = document.getElementById('darkModeToggle');
+        const themeIcon = document.getElementById('theme-icon');
+        const chartTitle = document.getElementById('chartTitle');
+        const showPercentageChartBtn = document.getElementById('showPercentageChartBtn');
+        const showDifferenceChartBtn = document.getElementById('showDifferenceChartBtn');
+
+        let tasks = [];
+        let currentTask = null;
+        let trendChart = null;
+        let timerInterval = null;
+        let activeChartType = 'percentage';
+        
+        function formatMinutesAndSeconds(decimalMinutes) {
+            if (isNaN(decimalMinutes)) return "N/A";
+            const totalSeconds = Math.round(Math.abs(decimalMinutes) * 60);
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            return `${minutes}分 ${seconds}秒`;
+        }
+        
+        function formatDateTime(timestamp) {
+            if (!timestamp) return 'N/A';
+            const date = new Date(timestamp);
+            return date.toLocaleString('zh-CN', { 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit',
+                hour12: false
+            });
+        }
+        
+        function generateTimestampName() {
+            const now = new Date();
+            const year = String(now.getFullYear()).slice(-2);
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hour = String(now.getHours()).padStart(2, '0');
+            const minute = String(now.getMinutes()).padStart(2, '0');
+            return `${year}${month}${day}${hour}${minute}`;
+        }
+
+        function loadData() {
+            const tasksJSON = localStorage.getItem('timeTrackerTasks');
+            tasks = tasksJSON ? JSON.parse(tasksJSON) : [];
+            const currentTaskJSON = localStorage.getItem('timeTrackerCurrentTask');
+            currentTask = currentTaskJSON ? JSON.parse(currentTaskJSON) : null;
+            if (currentTask) {
+                startLiveTimer();
+            }
+        }
+
+        function saveData() {
+            localStorage.setItem('timeTrackerTasks', JSON.stringify(tasks));
+            localStorage.setItem('timeTrackerCurrentTask', JSON.stringify(currentTask));
+        }
+        
+        function renderControlPanel() {
+            controlPanel.innerHTML = ''; 
+
+            const successMessageDiv = document.createElement('div');
+            successMessageDiv.className = 'success-message';
+            successMessageDiv.id = 'successMessage';
+            controlPanel.appendChild(successMessageDiv);
+
+            if (currentTask) {
+                const statusDiv = document.createElement('div');
+                statusDiv.className = 'status-display';
+                const formattedExpected = formatMinutesAndSeconds(currentTask.expected);
+                statusDiv.innerHTML = `
+                    <h2>正在进行...</h2>
+                    <input type="text" id="runningTaskNameInput" placeholder="(点击输入任务名称)" value="${currentTask.name || ''}">
+                    <p>预期: ${formattedExpected}</p>
+                    <p id="live-timer">00:00</p>
+                    <div class="time-display-container">
+                        <div class="time-block">
+                            <span class="time-label">开始时间</span>
+                            <span class="time-value">${formatDateTime(currentTask.start)}</span>
+                        </div>
+                        <div class="time-block">
+                            <span class="time-label">当前时间</span>
+                            <span class="time-value" id="current-time">${formatDateTime(new Date().getTime())}</span>
+                        </div>
+                    </div>
+                `;
+                const stopBtn = document.createElement('button');
+                stopBtn.innerHTML = '<i class="bi bi-stop-circle-fill"></i> 结束任务';
+                stopBtn.style.marginTop = '15px';
+                stopBtn.onclick = stopTask;
+                
+                controlPanel.appendChild(statusDiv);
+                controlPanel.appendChild(stopBtn);
+                
+                const runningTaskNameInput = document.getElementById('runningTaskNameInput');
+                runningTaskNameInput.addEventListener('input', (event) => {
+                    currentTask.name = event.target.value;
+                    saveData();
+                });
+
+            } else {
+                const form = document.createElement('form');
+                form.onsubmit = startTask;
+                form.innerHTML = `
+                    <h2>开始新任务</h2>
+                    <div class="form-group">
+                        <label for="expectedTime">预期用时 (分钟):</label>
+                        <input type="number" id="expectedTime" min="0.1" step="0.1" value="10" placeholder="例如: 0.5 代表30秒" required>
+                    </div>
+                    <button type="submit"><i class="bi bi-play-circle-fill"></i> 开始任务</button>
+                `;
+                controlPanel.appendChild(form);
+            }
+        }
+
+        function renderChart() {
+            if (trendChart) { trendChart.destroy(); }
+            const labels = tasks.map((task, index) => task.name || `任务 ${index + 1}`);
+            const chartTextColor = getComputedStyle(document.documentElement).getPropertyValue('--secondary-text-color');
+            
+            let chartData, chartOptions;
+
+            if (activeChartType === 'percentage') {
+                // --- 改动2：修改图表和按钮的文本 ---
+                chartTitle.textContent = '百分比时间差趋势图';
+                showPercentageChartBtn.innerHTML = '<i class="bi bi-percent"></i> 百分比时间差';
+                const data = tasks.map(task => task.errorPercentage);
+                chartData = {
+                    labels: labels,
+                    datasets: [{
+                        label: '百分比时间差', data: data,
+                        borderColor: '#28a745', backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                        fill: true, tension: 0.1
+                    }]
+                };
+                chartOptions = {
+                    scales: {
+                        y: {
+                            title: { display: true, text: '百分比时间差', color: chartTextColor },
+                            ticks: { color: chartTextColor, callback: value => value.toFixed(0) + '%' },
+                            min: -100, max: 100
+                        }
+                    },
+                    plugins: {
+                        tooltip: { callbacks: { label: context => `百分比差: ${context.raw > 0 ? '+' : ''}${context.raw.toFixed(1)}%` } }
+                    }
+                };
+            } else { 
+                chartTitle.textContent = '绝对时间差趋势图';
+                showDifferenceChartBtn.innerHTML = '<i class="bi bi-bar-chart-line-fill"></i> 绝对时间差';
+                const data = tasks.map(task => Math.abs(task.difference));
+                chartData = {
+                    labels: labels,
+                    datasets: [{
+                        label: '时间差', data: data,
+                        borderColor: 'var(--primary-color)', backgroundColor: 'rgba(26, 115, 232, 0.1)',
+                        fill: true, tension: 0.1
+                    }]
+                };
+                chartOptions = {
+                    scales: {
+                        y: {
+                            title: { display: true, text: '时间差', color: chartTextColor },
+                            ticks: { color: chartTextColor, callback: value => formatMinutesAndSeconds(value) }
+                        }
+                    },
+                    plugins: {
+                        tooltip: { callbacks: { label: context => `差值: ${formatMinutesAndSeconds(context.raw)}` } }
+                    }
+                };
+            }
+
+            const commonOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: { x: { ticks: { color: chartTextColor } } },
+                plugins: { legend: { labels: { color: chartTextColor } } }
+            };
+
+            trendChart = new Chart(chartCanvas, {
+                type: 'line',
+                data: chartData,
+                options: { ...commonOptions, ...chartOptions, scales: { ...commonOptions.scales, ...chartOptions.scales }}
+            });
+        }
+        
+        function renderDataTable() {
+            let tableHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" id="selectAllCheckbox" title="全选/全不选"></th>
+                            <th>任务名称</th>
+                            <th>预期用时</th>
+                            <th>实际用时</th>
+                            <th>差值</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+            tasks.forEach((task, index) => {
+                const formattedDifference = formatMinutesAndSeconds(task.difference);
+                const formattedExpected = formatMinutesAndSeconds(task.expected);
+                tableHTML += `
+                    <tr>
+                        <td><input type="checkbox" class="delete-checkbox" data-index="${index}"></td>
+                        <td>${task.name}</td>
+                        <td>${formattedExpected}</td>
+                        <td>${task.actualFormatted}</td>
+                        <td>${formattedDifference}</td>
+                    </tr>`;
+            });
+            tableHTML += `</tbody></table>`;
+            dataManagementTable.innerHTML = tableHTML || "<p>暂无历史记录。</p>";
+            
+            const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+            if (selectAllCheckbox) {
+                selectAllCheckbox.addEventListener('change', (event) => {
+                    document.querySelectorAll('.delete-checkbox').forEach(checkbox => {
+                        checkbox.checked = event.target.checked;
+                    });
+                });
+            }
+        }
+        
+        function updateUI() {
+            renderControlPanel();
+            // 只在有数据时才渲染图表和表格
+            if (tasks.length > 0) {
+                renderChart();
+                renderDataTable();
+            }
+        }
+        
+        function startTask(event) {
+            event.preventDefault();
+            document.getElementById('successMessage').style.display = 'none';
+            
+            const expectedTime = parseFloat(document.getElementById('expectedTime').value);
+
+            currentTask = {
+                name: "",
+                expected: expectedTime,
+                start: new Date().getTime()
+            };
+            saveData();
+            updateUI();
+            startLiveTimer();
+        }
+
+        function stopTask() {
+            stopLiveTimer();
+            
+            let taskName = currentTask.name ? currentTask.name.trim() : "";
+            if (taskName === "") {
+                taskName = generateTimestampName();
+            }
+
+            const endTime = new Date().getTime();
+            const startTime = currentTask.start;
+            
+            const durationMs = endTime - startTime;
+            const actualMinutesDecimal = durationMs / (1000 * 60);
+            const difference = actualMinutesDecimal - currentTask.expected;
+            const formattedDuration = formatMinutesAndSeconds(actualMinutesDecimal);
+            
+            const errorPercentage = currentTask.expected > 0 ? (difference / currentTask.expected) * 100 : 0;
+            // 改动2：修改百分比的显示文本
+            const formattedPercentage = `${errorPercentage.toFixed(1)}%`;
+
+            tasks.push({
+                name: taskName,
+                expected: currentTask.expected,
+                actual: actualMinutesDecimal,
+                actualFormatted: formattedDuration,
+                difference: difference,
+                errorPercentage: errorPercentage
+            });
+
+            const formattedDifference = formatMinutesAndSeconds(difference);
+            const formattedExpected = formatMinutesAndSeconds(currentTask.expected);
+            
+            const successMessage = `
+                <p><b>任务 "${taskName}" 已记录!</b></p>
+                <div class="time-display-container">
+                    <div class="time-block">
+                        <span class="time-label">开始时间</span>
+                        <span class="time-value">${formatDateTime(startTime)}</span>
+                    </div>
+                    <div class="time-block">
+                        <span class="time-label">结束时间</span>
+                        <span class="time-value">${formatDateTime(endTime)}</span>
+                    </div>
+                </div>
+                <p>预期: ${formattedExpected} | 实际: ${formattedDuration}</p>
+                <p>时间差: ${formattedDifference} (百分比差: ${errorPercentage > 0 ? '+' : ''}${formattedPercentage})</p>
+            `;
+            
+            document.title = '时间追踪器';
+            currentTask = null;
+            saveData();
+            updateUI();
+
+            const successDiv = document.getElementById('successMessage');
+            successDiv.innerHTML = successMessage;
+            successDiv.style.display = 'block';
+        }
+
+        function deleteSelectedTasks() {
+            const checkboxes = document.querySelectorAll('.delete-checkbox:checked');
+            const indicesToDelete = Array.from(checkboxes).map(cb => parseInt(cb.dataset.index));
+            
+            if (indicesToDelete.length === 0) {
+                alert('请先勾选要删除的记录。');
+                return;
+            }
+
+            if (confirm(`您确定要删除选中的 ${indicesToDelete.length} 条记录吗？此操作不可撤销。`)) {
+                tasks = tasks.filter((_, index) => !indicesToDelete.includes(index));
+                saveData();
+                updateUI();
+            }
+        }
+        
+        function startLiveTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(updateLiveTimer, 1000);
+        }
+        function stopLiveTimer() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+        function updateLiveTimer() {
+            if (!currentTask) {
+                stopLiveTimer();
+                return;
+            }
+            const liveTimerElement = document.getElementById('live-timer');
+            const currentTimeElement = document.getElementById('current-time');
+            if(!liveTimerElement || !currentTimeElement) return;
+
+            const elapsedMs = new Date().getTime() - currentTask.start;
+            const totalSeconds = Math.floor(elapsedMs / 1000);
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            const formattedTime = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            
+            liveTimerElement.textContent = formattedTime;
+            currentTimeElement.textContent = formatDateTime(new Date().getTime());
+            document.title = `${formattedTime} - ${currentTask.name || '(未命名任务)'}`;
+        }
+        
+        function applyTheme(theme) {
+            const icon = document.getElementById('theme-icon');
+            if (theme === 'dark') {
+                document.body.classList.add('dark-mode');
+                themeToggle.checked = true;
+                icon.innerHTML = '<i class="bi bi-moon-stars-fill"></i>';
+            } else {
+                document.body.classList.remove('dark-mode');
+                themeToggle.checked = false;
+                icon.innerHTML = '<i class="bi bi-sun-fill"></i>';
+            }
+            localStorage.setItem('theme', theme);
+            if (tasks.length > 0) {
+                renderChart();
+            }
+        }
+        
+        showPercentageChartBtn.addEventListener('click', () => {
+            activeChartType = 'percentage';
+            showPercentageChartBtn.classList.add('active');
+            showDifferenceChartBtn.classList.remove('active');
+            renderChart();
+        });
+
+        showDifferenceChartBtn.addEventListener('click', () => {
+            activeChartType = 'absolute';
+            showDifferenceChartBtn.classList.add('active');
+            showPercentageChartBtn.classList.remove('active');
+            renderChart();
+        });
+        
+        themeToggle.addEventListener('change', () => {
+            const newTheme = themeToggle.checked ? 'dark' : 'light';
+            applyTheme(newTheme);
+        });
+
+        deleteSelectedBtn.onclick = deleteSelectedTasks;
+        
+        const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        applyTheme(savedTheme);
+
+        loadData();
+        updateUI();
+
+    </script>
+</body>
+</html>
