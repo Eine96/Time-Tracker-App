@@ -379,10 +379,28 @@
         }
 
         function loadData() {
-            const tasksJSON = localStorage.getItem('timeTrackerTasks');
-            tasks = tasksJSON ? JSON.parse(tasksJSON) : [];
-            const currentTaskJSON = localStorage.getItem('timeTrackerCurrentTask');
-            currentTask = currentTaskJSON ? JSON.parse(currentTaskJSON) : null;
+            try {
+                const tasksJSON = localStorage.getItem('timeTrackerTasks');
+                // 如果存在数据，则尝试解析，否则设置为空数组
+                tasks = tasksJSON ? JSON.parse(tasksJSON) : [];
+
+                const currentTaskJSON = localStorage.getItem('timeTrackerCurrentTask');
+                // 如果存在数据，则尝试解析，否则设置为null
+                currentTask = currentTaskJSON ? JSON.parse(currentTaskJSON) : null;
+                
+                // 增加一次数据完整性检查，以防万一
+                if (!Array.isArray(tasks)) {
+                    console.warn("Tasks data was not an array, resetting.");
+                    tasks = [];
+                }
+
+            } catch (error) {
+                console.error("Failed to load or parse data from localStorage. Resetting data to a clean state.", error);
+                // 如果解析过程中发生任何错误，都将数据安全地重置为空，保证应用不会崩溃
+                tasks = [];
+                currentTask = null;
+            }
+
             if (currentTask) {
                 startLiveTimer();
             }
