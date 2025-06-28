@@ -3,7 +3,7 @@ const CACHE_NAME = 'time-tracker-cache-v3'; // 再次更新版本号，以确保
 // 清单保持不变，但要确保文件名正确！
 const urlsToCache = [
   './',
-  './index.html', // 确保这是您HTML文件的正确名称
+  './tracker.html', // 确保这是您HTML文件的正确名称
   './icon-512x512.png'
 ];
 
