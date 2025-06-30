@@ -59,7 +59,6 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             margin-bottom: 20px;
             overflow: hidden;
-            /* --- MODIFIED: Added transitions for hover effect --- */
             transition: background-color 0.3s, transform 0.3s ease-out, box-shadow 0.3s ease-out;
         }
         .card {
@@ -116,7 +115,6 @@
             background-color: var(--primary-color);
             font-size: 1em;
             cursor: pointer;
-            /* --- MODIFIED: Added transform for click effect --- */
             transition: background-color 0.3s, transform 0.1s ease-out;
             display: flex;
             align-items: center;
@@ -135,7 +133,6 @@
         button.secondary:hover {
             background-color: var(--danger-hover-color);
         }
-        /* --- NEW: Click animation for buttons --- */
         button:active, .chart-button-group button:active {
             transform: scale(0.97);
             transition-duration: 0.1s;
@@ -218,10 +215,13 @@
         .theme-switch-wrapper {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 16px;
         }
         #theme-icon {
             font-size: 1.5em;
+            display: flex;
+            align-items: center;
+            color: var(--secondary-text-color);
         }
         .theme-switch {
             display: inline-block;
@@ -279,10 +279,8 @@
             margin-bottom: 20px;
             background-color: var(--card-bg-color);
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            /* --- MODIFIED: Added transitions for hover effect --- */
             transition: background-color 0.3s, transform 0.3s ease-out, box-shadow 0.3s ease-out;
         }
-        /* --- NEW: Hover effect for details/cards --- */
         details:hover, .container:hover {
             transform: translateY(-4px);
             box-shadow: 0 8px 16px rgba(0,0,0,0.12);
@@ -306,7 +304,7 @@
         summary::before {
             content: '▶';
             font-size: 0.8em;
-            transition: transform 0.2s ease-in-out; /* Smoother arrow rotation */
+            transition: transform 0.2s ease-in-out;
         }
         details[open] > summary::before {
             transform: rotate(90deg);
@@ -321,13 +319,13 @@
             margin: 0;
             display: flex;
             align-items: center;
-            transition: color 0.3s, transform 0.2s ease-out; /* Added transform transition */
+            transition: color 0.3s, transform 0.2s ease-out;
         }
         .icon-button:hover {
             color: var(--primary-color);
         }
         .icon-button:active {
-            transform: scale(0.9); /* Click effect for icon buttons */
+            transform: scale(0.9);
         }
 
         @keyframes pulse-glow {
@@ -347,7 +345,6 @@
             font-style: italic;
         }
 
-        /* --- NEW: Animation for content switching --- */
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -362,6 +359,22 @@
             animation: fadeIn 0.4s ease-out forwards;
         }
 
+        .dark-mode-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* --- NEW: Responsive adjustments for small screens --- */
+        @media (max-width: 400px) {
+            .time-value {
+                font-size: 1.3em;
+            }
+            .time-display-container {
+                gap: 5px; /* Reduce gap on small screens */
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -373,11 +386,13 @@
             </button>
             <input type="color" id="themeColorPicker" value="#1a73e8" style="display: none;">
             
-            <span id="theme-icon"></span>
-            <label class="theme-switch" for="darkModeToggle">
-                <input type="checkbox" id="darkModeToggle">
-                <span class="slider"></span>
-            </label>
+            <div class="dark-mode-toggle">
+                <span id="theme-icon"></span>
+                <label class="theme-switch" for="darkModeToggle">
+                    <input type="checkbox" id="darkModeToggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
         </div>
     </div>
 
@@ -432,12 +447,13 @@
         let timerInterval = null;
         let activeChartType = 'percentage';
         
+        // --- MODIFIED: Changed to symbol format ---
         function formatMinutesAndSeconds(decimalMinutes) {
             if (isNaN(decimalMinutes)) return "N/A";
             const totalSeconds = Math.round(Math.abs(decimalMinutes) * 60);
             const minutes = Math.floor(totalSeconds / 60);
             const seconds = totalSeconds % 60;
-            return `${minutes}分 ${seconds}秒`;
+            return `${minutes}' ${seconds}"`;
         }
         
         function formatDateTime(timestamp) {
@@ -503,7 +519,7 @@
                 const formattedExpectedEndTime = formatDateTime(expectedEndTime.getTime());
 
                 const statusDiv = document.createElement('div');
-                statusDiv.className = 'status-display anim-fade-in'; // Added animation class
+                statusDiv.className = 'status-display anim-fade-in';
                 const formattedExpected = formatMinutesAndSeconds(currentTask.expected);
                 
                 statusDiv.innerHTML = `
@@ -549,7 +565,7 @@
 
             } else {
                 const form = document.createElement('form');
-                form.className = 'anim-fade-in'; // Added animation class
+                form.className = 'anim-fade-in';
                 form.onsubmit = startTask;
                 form.innerHTML = `
                     <h2>开始新任务</h2>
@@ -625,7 +641,6 @@
                 scales: { x: { ticks: { color: chartTextColor } } },
                 plugins: { 
                     legend: { labels: { color: chartTextColor } },
-                    // --- NEW: Added animation options for chart ---
                     animation: {
                         duration: 500,
                         easing: 'easeOutQuart'
@@ -884,12 +899,11 @@
         loadData();
         updateUI();
 
-        // --- NEW: Staggered animation for initial page load ---
         document.addEventListener('DOMContentLoaded', () => {
             const elementsToAnimate = document.querySelectorAll('.container, details');
             elementsToAnimate.forEach((el, index) => {
                 el.style.animation = `fadeIn 0.5s ${index * 0.07}s ease-out forwards`;
-                el.style.opacity = 0; // Start as invisible before animation
+                el.style.opacity = 0;
             });
         });
 
