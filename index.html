@@ -14,6 +14,7 @@
             --secondary-text-color: #5f6368;
             --border-color: #f0f0f0;
             --primary-color: #1a73e8;
+            --primary-color-rgb: 26, 115, 232;
             --primary-hover-color: #155ab6;
             --danger-color: #d93025;
             --danger-hover-color: #a52714;
@@ -58,7 +59,8 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             margin-bottom: 20px;
             overflow: hidden;
-            transition: background-color 0.3s;
+            /* --- MODIFIED: Added transitions for hover effect --- */
+            transition: background-color 0.3s, transform 0.3s ease-out, box-shadow 0.3s ease-out;
         }
         .card {
             padding: 20px;
@@ -70,6 +72,7 @@
         h1, h2 {
             text-align: center;
             color: var(--primary-color);
+            transition: color 0.3s;
         }
         h1 { margin: 0; font-size: 1.5em; display: flex; align-items: center; gap: 10px;}
         h2 {
@@ -94,6 +97,7 @@
             box-sizing: border-box;
             background-color: var(--bg-color);
             color: var(--text-color);
+            transition: border-color 0.3s, box-shadow 0.3s;
         }
         input[type=number]::-webkit-outer-spin-button,
         input[type=number]::-webkit-inner-spin-button {
@@ -112,7 +116,8 @@
             background-color: var(--primary-color);
             font-size: 1em;
             cursor: pointer;
-            transition: background-color 0.3s;
+            /* --- MODIFIED: Added transform for click effect --- */
+            transition: background-color 0.3s, transform 0.1s ease-out;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -130,6 +135,11 @@
         button.secondary:hover {
             background-color: var(--danger-hover-color);
         }
+        /* --- NEW: Click animation for buttons --- */
+        button:active, .chart-button-group button:active {
+            transform: scale(0.97);
+            transition-duration: 0.1s;
+        }
         .status-display, .success-message {
             padding: 15px;
             border-radius: 4px;
@@ -137,16 +147,18 @@
             line-height: 1.6;
         }
         .status-display {
-            background-color: rgba(26, 115, 232, 0.1);
+            background-color: rgba(var(--primary-color-rgb), 0.08);
         }
         .status-display p, .success-message p { margin: 5px 0; }
+        
         #live-timer {
-            font-size: 2.5em;
-            font-weight: bold;
-            color: var(--primary-color);
-            margin: 10px 0;
-            letter-spacing: 2px;
+            font-size: 1.2em;
+            font-weight: 500;
+            color: var(--secondary-text-color);
+            margin: 15px 0 0 0;
+            letter-spacing: 0;
         }
+
         .success-message {
             background-color: #e6f4ea;
             color: #1e8e3e;
@@ -158,15 +170,20 @@
             background-color: #344a3a;
             color: #a2d2b0;
         }
+
         .time-display-container {
             display: flex;
+            flex-direction: row;
             justify-content: space-between;
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid var(--border-color);
+            align-items: center;
+            margin-top: 10px;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
         }
         .success-message .time-display-container {
             margin: 15px 0 10px 0;
+            border-bottom: none;
         }
         .time-block {
             text-align: center;
@@ -176,11 +193,14 @@
             color: var(--secondary-text-color);
             display: block;
         }
+
         .time-value {
-            font-size: 1.1em;
+            font-size: 1.5em;
             font-weight: 500;
             color: var(--text-color);
+            letter-spacing: 1px;
         }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -253,13 +273,19 @@
             height: 300px; 
             position: relative;
         }
-        /* --- 新增：可折叠面板的样式 --- */
         details {
             border: 1px solid var(--border-color);
             border-radius: 8px;
             margin-bottom: 20px;
             background-color: var(--card-bg-color);
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            /* --- MODIFIED: Added transitions for hover effect --- */
+            transition: background-color 0.3s, transform 0.3s ease-out, box-shadow 0.3s ease-out;
+        }
+        /* --- NEW: Hover effect for details/cards --- */
+        details:hover, .container:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.12);
         }
         details[open] {
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
@@ -269,21 +295,71 @@
             font-size: 1.2em;
             padding: 20px;
             cursor: pointer;
-            list-style: none; /* 隐藏默认的三角箭头 */
+            list-style: none;
             display: flex;
             align-items: center;
             gap: 10px;
         }
         summary::-webkit-details-marker {
-            display: none; /* 隐藏默认的三角箭头 (Chrome/Safari) */
+            display: none;
         }
-        summary::before { /* 自定义箭头 */
+        summary::before {
             content: '▶';
             font-size: 0.8em;
-            transition: transform 0.2s;
+            transition: transform 0.2s ease-in-out; /* Smoother arrow rotation */
         }
         details[open] > summary::before {
             transform: rotate(90deg);
+        }
+        .icon-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.4em;
+            color: var(--secondary-text-color);
+            padding: 0;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            transition: color 0.3s, transform 0.2s ease-out; /* Added transform transition */
+        }
+        .icon-button:hover {
+            color: var(--primary-color);
+        }
+        .icon-button:active {
+            transform: scale(0.9); /* Click effect for icon buttons */
+        }
+
+        @keyframes pulse-glow {
+            0% {
+                box-shadow: 0 0 0 0 rgba(var(--primary-color-rgb), 0.3);
+            }
+            100% {
+                box-shadow: 0 0 0 8px rgba(var(--primary-color-rgb), 0);
+            }
+        }
+        .input-pulse {
+            animation: pulse-glow 1.5s infinite;
+        }
+        #runningTaskNameInput::placeholder {
+            color: var(--secondary-text-color);
+            opacity: 0.8;
+            font-style: italic;
+        }
+
+        /* --- NEW: Animation for content switching --- */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        .anim-fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
         }
 
     </style>
@@ -292,6 +368,11 @@
     <div class="header-container">
         <h1><i class="bi bi-stopwatch-fill"></i> 时间追踪器</h1>
         <div class="theme-switch-wrapper">
+            <button id="colorPickerBtn" class="icon-button" title="选择主题色">
+                <i class="bi bi-palette-fill"></i>
+            </button>
+            <input type="color" id="themeColorPicker" value="#1a73e8" style="display: none;">
+            
             <span id="theme-icon"></span>
             <label class="theme-switch" for="darkModeToggle">
                 <input type="checkbox" id="darkModeToggle">
@@ -342,6 +423,8 @@
         const chartTitle = document.getElementById('chartTitle');
         const showPercentageChartBtn = document.getElementById('showPercentageChartBtn');
         const showDifferenceChartBtn = document.getElementById('showDifferenceChartBtn');
+        const themeColorPicker = document.getElementById('themeColorPicker');
+        const colorPickerBtn = document.getElementById('colorPickerBtn');
 
         let tasks = [];
         let currentTask = null;
@@ -381,14 +464,11 @@
         function loadData() {
             try {
                 const tasksJSON = localStorage.getItem('timeTrackerTasks');
-                // 如果存在数据，则尝试解析，否则设置为空数组
                 tasks = tasksJSON ? JSON.parse(tasksJSON) : [];
 
                 const currentTaskJSON = localStorage.getItem('timeTrackerCurrentTask');
-                // 如果存在数据，则尝试解析，否则设置为null
                 currentTask = currentTaskJSON ? JSON.parse(currentTaskJSON) : null;
                 
-                // 增加一次数据完整性检查，以防万一
                 if (!Array.isArray(tasks)) {
                     console.warn("Tasks data was not an array, resetting.");
                     tasks = [];
@@ -396,7 +476,6 @@
 
             } catch (error) {
                 console.error("Failed to load or parse data from localStorage. Resetting data to a clean state.", error);
-                // 如果解析过程中发生任何错误，都将数据安全地重置为空，保证应用不会崩溃
                 tasks = [];
                 currentTask = null;
             }
@@ -420,24 +499,31 @@
             controlPanel.appendChild(successMessageDiv);
 
             if (currentTask) {
+                const expectedEndTime = new Date(currentTask.start + currentTask.expected * 60 * 1000);
+                const formattedExpectedEndTime = formatDateTime(expectedEndTime.getTime());
+
                 const statusDiv = document.createElement('div');
-                statusDiv.className = 'status-display';
+                statusDiv.className = 'status-display anim-fade-in'; // Added animation class
                 const formattedExpected = formatMinutesAndSeconds(currentTask.expected);
+                
                 statusDiv.innerHTML = `
                     <h2>正在进行...</h2>
-                    <input type="text" id="runningTaskNameInput" placeholder="(点击输入任务名称)" value="${currentTask.name || ''}">
-                    <p>预期: ${formattedExpected}</p>
-                    <p id="live-timer">00:00</p>
+                    <input type="text" id="runningTaskNameInput" placeholder="给任务起个名字吧！" value="${currentTask.name || ''}">
                     <div class="time-display-container">
                         <div class="time-block">
                             <span class="time-label">开始时间</span>
                             <span class="time-value">${formatDateTime(currentTask.start)}</span>
                         </div>
                         <div class="time-block">
-                            <span class="time-label">当前时间</span>
-                            <span class="time-value" id="current-time">${formatDateTime(new Date().getTime())}</span>
+                            <span class="time-label">预期用时</span>
+                            <span class="time-value">${formattedExpected}</span>
+                        </div>
+                        <div class="time-block">
+                            <span class="time-label">预期结束时间</span>
+                            <span class="time-value">${formattedExpectedEndTime}</span>
                         </div>
                     </div>
+                    <p>实时计时: <span id="live-timer">00:00</span></p>
                 `;
                 const stopBtn = document.createElement('button');
                 stopBtn.innerHTML = '<i class="bi bi-stop-circle-fill"></i> 结束任务';
@@ -448,13 +534,22 @@
                 controlPanel.appendChild(stopBtn);
                 
                 const runningTaskNameInput = document.getElementById('runningTaskNameInput');
+                
+                if (!currentTask.name) {
+                    runningTaskNameInput.classList.add('input-pulse');
+                }
+
                 runningTaskNameInput.addEventListener('input', (event) => {
                     currentTask.name = event.target.value;
+                    if (event.target.value) {
+                        runningTaskNameInput.classList.remove('input-pulse');
+                    }
                     saveData();
                 });
 
             } else {
                 const form = document.createElement('form');
+                form.className = 'anim-fade-in'; // Added animation class
                 form.onsubmit = startTask;
                 form.innerHTML = `
                     <h2>开始新任务</h2>
@@ -476,7 +571,6 @@
             let chartData, chartOptions;
 
             if (activeChartType === 'percentage') {
-                // --- 改动2：修改图表和按钮的文本 ---
                 chartTitle.textContent = '百分比时间差趋势图';
                 showPercentageChartBtn.innerHTML = '<i class="bi bi-percent"></i> 百分比时间差';
                 const data = tasks.map(task => task.errorPercentage);
@@ -508,7 +602,7 @@
                     labels: labels,
                     datasets: [{
                         label: '时间差', data: data,
-                        borderColor: 'var(--primary-color)', backgroundColor: 'rgba(26, 115, 232, 0.1)',
+                        borderColor: 'var(--primary-color)', backgroundColor: 'rgba(var(--primary-color-rgb), 0.1)',
                         fill: true, tension: 0.1
                     }]
                 };
@@ -529,7 +623,14 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 scales: { x: { ticks: { color: chartTextColor } } },
-                plugins: { legend: { labels: { color: chartTextColor } } }
+                plugins: { 
+                    legend: { labels: { color: chartTextColor } },
+                    // --- NEW: Added animation options for chart ---
+                    animation: {
+                        duration: 500,
+                        easing: 'easeOutQuart'
+                    }
+                }
             };
 
             trendChart = new Chart(chartCanvas, {
@@ -579,9 +680,8 @@
         
         function updateUI() {
             renderControlPanel();
-            // 只在有数据时才渲染图表和表格
             if (tasks.length > 0) {
-                 // renderChart(); // 暂时禁用图表渲染
+                renderChart();
                 renderDataTable();
             }
         }
@@ -619,7 +719,6 @@
             const formattedDuration = formatMinutesAndSeconds(actualMinutesDecimal);
             
             const errorPercentage = currentTask.expected > 0 ? (difference / currentTask.expected) * 100 : 0;
-            // 改动2：修改百分比的显示文本
             const formattedPercentage = `${errorPercentage.toFixed(1)}%`;
 
             tasks.push({
@@ -684,14 +783,14 @@
             clearInterval(timerInterval);
             timerInterval = null;
         }
+
         function updateLiveTimer() {
             if (!currentTask) {
                 stopLiveTimer();
                 return;
             }
             const liveTimerElement = document.getElementById('live-timer');
-            const currentTimeElement = document.getElementById('current-time');
-            if(!liveTimerElement || !currentTimeElement) return;
+            if(!liveTimerElement) return;
 
             const elapsedMs = new Date().getTime() - currentTask.start;
             const totalSeconds = Math.floor(elapsedMs / 1000);
@@ -700,7 +799,6 @@
             const formattedTime = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
             
             liveTimerElement.textContent = formattedTime;
-            currentTimeElement.textContent = formatDateTime(new Date().getTime());
             document.title = `${formattedTime} - ${currentTask.name || '(未命名任务)'}`;
         }
         
@@ -716,6 +814,31 @@
                 icon.innerHTML = '<i class="bi bi-sun-fill"></i>';
             }
             localStorage.setItem('theme', theme);
+            if (tasks.length > 0) {
+                renderChart();
+            }
+        }
+
+        function hexToRgb(hex) {
+            let r = 0, g = 0, b = 0;
+            if (hex.length == 4) {
+                r = "0x" + hex[1] + hex[1];
+                g = "0x" + hex[2] + hex[2];
+                b = "0x" + hex[3] + hex[3];
+            } else if (hex.length == 7) {
+                r = "0x" + hex[1] + hex[2];
+                g = "0x" + hex[3] + hex[4];
+                b = "0x" + hex[5] + hex[6];
+            }
+            return `${+r}, ${+g}, ${+b}`;
+        }
+
+        function applyThemeColor(color) {
+            if (!color) return;
+            const rgb = hexToRgb(color);
+            document.documentElement.style.setProperty('--primary-color', color);
+            document.documentElement.style.setProperty('--primary-color-rgb', rgb);
+            localStorage.setItem('themeColor', color);
             if (tasks.length > 0) {
                 renderChart();
             }
@@ -742,11 +865,33 @@
 
         deleteSelectedBtn.onclick = deleteSelectedTasks;
         
+        colorPickerBtn.addEventListener('click', () => {
+            themeColorPicker.click();
+        });
+        themeColorPicker.addEventListener('input', (event) => {
+            applyThemeColor(event.target.value);
+        });
+
         const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
         applyTheme(savedTheme);
 
+        const savedThemeColor = localStorage.getItem('themeColor');
+        if (savedThemeColor) {
+            themeColorPicker.value = savedThemeColor;
+            applyThemeColor(savedThemeColor);
+        }
+
         loadData();
-        // updateUI(); // 暂时禁用所有UI渲染
+        updateUI();
+
+        // --- NEW: Staggered animation for initial page load ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const elementsToAnimate = document.querySelectorAll('.container, details');
+            elementsToAnimate.forEach((el, index) => {
+                el.style.animation = `fadeIn 0.5s ${index * 0.07}s ease-out forwards`;
+                el.style.opacity = 0; // Start as invisible before animation
+            });
+        });
 
     </script>
 </body>
