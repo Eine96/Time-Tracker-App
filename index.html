@@ -72,12 +72,15 @@
         h1 > i {
             color: var(--primary-color);
         }
-        h2 {
+        h2, h3, h4 {
             color: var(--text-color);
-            font-size: 1.2em;
             margin-top: 0;
             font-weight: 500;
         }
+        h2 { font-size: 1.2em; }
+        h3 { font-size: 1.1em; }
+        h4 { font-size: 1em; }
+
         .form-group {
             margin-bottom: 15px;
         }
@@ -317,7 +320,7 @@
             background-color: var(--card-bg-color);
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             transition: background-color 0.3s, transform 0.3s ease-out, box-shadow 0.3s ease-out;
-            overflow: hidden; /* --- FIX: This property clips the inner content to the rounded corners --- */
+            overflow: hidden;
         }
         details:hover {
             transform: translateY(-4px);
@@ -475,6 +478,28 @@
             background-color: #444;
         }
 
+        /* --- NEW: Styles for the guide --- */
+        .guide-content {
+            padding: 0 20px 20px 20px;
+            color: var(--secondary-text-color);
+            line-height: 1.8;
+        }
+        .guide-content h4 {
+            color: var(--text-color);
+            margin-bottom: 10px;
+        }
+        .guide-content p, .guide-content ul {
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        .guide-content ul {
+            padding-left: 20px;
+        }
+        .guide-content strong {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
         @media (max-width: 400px) {
             .time-value {
                 font-size: 1.3em;
@@ -496,6 +521,24 @@
             <input type="color" id="themeColorPicker" value="#ff9900" style="display: none;">
         </div>
     </div>
+
+    <!-- --- NEW: User Guide Section --- -->
+    <details>
+        <summary><i class="bi bi-info-circle-fill"></i> 使用指南</summary>
+        <div class="guide-content">
+            <h4>这是什么？</h4>
+            <p>
+                这是一个帮助你<strong>训练时间感</strong>的工具。通过不断地预估和记录，你会对自己处理各项事务所需的时间有更精准的把握，最终对生活和工作更加有<strong>掌控感</strong>。
+            </p>
+            <h4>如何使用？</h4>
+            <ul>
+                <li><strong>预估：</strong>在开始一项事项前，先在心里估算一下需要多长时间。</li>
+                <li><strong>记录：</strong>在“事项控制”中输入你的“预期用时”，然后点击“开始事项”。</li>
+                <li><strong>回顾：</strong>完成后点击“结束事项”，看看你的预估和实际用时有多大差距。</li>
+            </ul>
+            <p>坚持下去，你会发现自己对时间的掌控力越来越强！</p>
+        </div>
+    </details>
 
     <details open>
         <summary><i class="bi bi-joystick"></i> 事项控制</summary>
