@@ -253,7 +253,6 @@
             text-align: left;
             vertical-align: middle;
         }
-        /* --- MODIFIED: Styles for editable cell --- */
         td.editable {
             cursor: pointer;
             display: flex;
@@ -318,6 +317,7 @@
             background-color: var(--card-bg-color);
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             transition: background-color 0.3s, transform 0.3s ease-out, box-shadow 0.3s ease-out;
+            overflow: hidden; /* --- FIX: This property clips the inner content to the rounded corners --- */
         }
         details:hover {
             transform: translateY(-4px);
@@ -830,7 +830,6 @@
             tasks.forEach((task, index) => {
                 const formattedDifference = formatMinutesAndSeconds(task.difference);
                 const formattedExpected = formatMinutesAndSeconds(task.expected);
-                // --- MODIFIED: Added span and icon to the editable cell ---
                 tableHTML += `
                     <tr>
                         <td><input type="checkbox" class="delete-checkbox" data-index="${index}"></td>
@@ -1053,12 +1052,11 @@
             deleteModal.classList.remove('visible');
         });
 
-        // --- MODIFIED: More robust click handler for editing ---
         dataManagementTable.addEventListener('click', (event) => {
             const cell = event.target.closest('.editable');
             if (cell) {
                 if (cell.querySelector('input')) {
-                    return; // Already in edit mode
+                    return;
                 }
 
                 const textSpan = cell.querySelector('span');
