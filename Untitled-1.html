@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>时间追踪器</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⏱️</text></svg>">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         :root {
+            /* --- MODIFIED: New color palette based on reference image --- */
             --bg-color: #0d0d0d;
             --card-bg-color: #1e1e1e;
             --text-color: #f0f0f0;
@@ -19,7 +19,6 @@
             --primary-hover-color: #e68a00;
             --danger-color: #e53e3e;
             --danger-hover-color: #c53030;
-            --success-color: #16a34a;
             --button-bg-color: #333333;
             --button-text-color: #f0f0f0;
         }
@@ -47,7 +46,7 @@
             width: 100%;
             max-width: 600px;
             background-color: var(--card-bg-color);
-            border-radius: 16px;
+            border-radius: 16px; /* Increased border-radius */
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             margin-bottom: 20px;
             overflow: hidden;
@@ -67,10 +66,10 @@
             display: flex; 
             align-items: center; 
             gap: 10px;
-            color: var(--text-color);
+            color: var(--text-color); /* Title text color changed */
         }
         h1 > i {
-            color: var(--primary-color);
+            color: var(--primary-color); /* Icon keeps the accent color */
         }
         h2 {
             color: var(--text-color);
@@ -115,7 +114,7 @@
             padding: 12px;
             border: none;
             border-radius: 12px;
-            color: #000;
+            color: #000; /* Black text for better contrast on orange */
             background-color: var(--primary-color);
             font-size: 1em;
             font-weight: bold;
@@ -143,14 +142,16 @@
             transform: scale(0.97);
             transition-duration: 0.1s;
         }
-        .status-display {
+        .status-display, .success-message {
             padding: 15px;
             border-radius: 12px;
             text-align: center;
             line-height: 1.6;
+        }
+        .status-display {
             background-color: rgba(var(--primary-color-rgb), 0.1);
         }
-        .status-display p { margin: 5px 0; }
+        .status-display p, .success-message p { margin: 5px 0; }
         
         #live-timer {
             font-size: 1.2em;
@@ -161,60 +162,12 @@
         }
 
         .success-message {
-            background-color: var(--card-bg-color);
-            border: 1px solid var(--border-color);
-            border-left: 5px solid var(--success-color);
-            color: var(--text-color);
-            text-align: left;
-            padding: 15px 20px;
-            border-radius: 12px;
+            background-color: #16a34a; /* Green success color */
+            color: #f0fdf4;
+            font-weight: 500;
             display: none;
             margin-bottom: 15px;
         }
-        .success-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: var(--success-color);
-            font-size: 1.2em;
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
-        .success-header h4 {
-            margin: 0;
-            font-size: 1em;
-        }
-        .success-details {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .detail-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 0.95em;
-        }
-        .detail-row:last-child {
-            border-bottom: none;
-            padding-bottom: 0;
-        }
-        .detail-label {
-            color: var(--secondary-text-color);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .detail-value {
-            font-weight: 500;
-            font-size: 1.1em;
-        }
-        .time-diff-highlight {
-            color: var(--success-color);
-        }
-
 
         .time-display-container {
             display: flex;
@@ -252,24 +205,6 @@
             padding: 10px;
             text-align: left;
             vertical-align: middle;
-        }
-        /* --- MODIFIED: Styles for editable cell --- */
-        td.editable {
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        td.editable:hover {
-            background-color: rgba(var(--primary-color-rgb), 0.1);
-        }
-        .edit-icon {
-            opacity: 0.3;
-            transition: opacity 0.2s ease-in-out;
-            margin-left: 8px;
-        }
-        td.editable:hover .edit-icon {
-            opacity: 1;
         }
         th {
             background-color: var(--bg-color);
@@ -310,8 +245,6 @@
             position: relative;
         }
         details {
-            width: 100%;
-            max-width: 600px;
             border: 1px solid var(--border-color);
             border-radius: 16px;
             margin-bottom: 20px;
@@ -319,7 +252,7 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             transition: background-color 0.3s, transform 0.3s ease-out, box-shadow 0.3s ease-out;
         }
-        details:hover {
+        details:hover, .container:hover {
             transform: translateY(-4px);
             box-shadow: 0 8px 20px rgba(0,0,0,0.25);
         }
@@ -352,7 +285,7 @@
             background: none;
             border: none;
             cursor: pointer;
-            font-size: 1.5em;
+            font-size: 1.5em; /* Made icon slightly larger */
             color: var(--secondary-text-color);
             padding: 0;
             margin: 0;
@@ -398,83 +331,6 @@
             animation: fadeIn 0.4s ease-out forwards;
         }
 
-        .empty-state {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 40px 20px;
-            text-align: center;
-            color: var(--secondary-text-color);
-        }
-        .empty-state i {
-            font-size: 3em;
-            color: var(--border-color);
-            margin-bottom: 15px;
-        }
-        .empty-state p {
-            margin: 0;
-            font-size: 1.1em;
-        }
-
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s, visibility 0.3s;
-        }
-        .modal-overlay.visible {
-            opacity: 1;
-            visibility: visible;
-        }
-        .modal-box {
-            background-color: var(--card-bg-color);
-            padding: 25px;
-            border-radius: 16px;
-            width: 90%;
-            max-width: 400px;
-            border: 1px solid var(--border-color);
-            transform: scale(0.95);
-            transition: transform 0.3s;
-        }
-        .modal-overlay.visible .modal-box {
-            transform: scale(1);
-        }
-        .modal-box h3 {
-            margin-top: 0;
-            color: var(--text-color);
-        }
-        .modal-box p {
-            color: var(--secondary-text-color);
-            margin-bottom: 20px;
-        }
-        .modal-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-        }
-        .modal-buttons button {
-            width: auto;
-            padding: 10px 20px;
-            font-weight: 500;
-        }
-        .modal-buttons .btn-cancel {
-            background-color: var(--button-bg-color);
-            color: var(--text-color);
-        }
-        .modal-buttons .btn-cancel:hover {
-            background-color: #444;
-        }
-
         @media (max-width: 400px) {
             .time-value {
                 font-size: 1.3em;
@@ -497,12 +353,9 @@
         </div>
     </div>
 
-    <details open>
-        <summary><i class="bi bi-joystick"></i> 事项控制</summary>
-        <div class="container" style="box-shadow: none; margin-bottom: 0; border-radius: 0; border: none;">
-            <div class="card" id="control-panel" style="border-bottom: none;"></div>
-        </div>
-    </details>
+    <div class="container">
+        <div class="card" id="control-panel"></div>
+    </div>
 
     <details>
         <summary><i class="bi bi-graph-up-arrow"></i> 图表与分析</summary>
@@ -513,7 +366,7 @@
                     <button id="showPercentageChartBtn" class="active"><i class="bi bi-percent"></i> 百分比差</button>
                     <button id="showDifferenceChartBtn"><i class="bi bi-bar-chart-line-fill"></i> 绝对差</button>
                 </div>
-                <div class="chart-wrapper" id="chart-wrapper">
+                <div class="chart-wrapper">
                     <canvas id="trendChart"></canvas>
                 </div>
             </div>
@@ -532,20 +385,8 @@
         </div>
     </details>
 
-    <div class="modal-overlay" id="delete-modal">
-        <div class="modal-box">
-            <h3>确认删除</h3>
-            <p id="delete-modal-text">您确定要删除选中的记录吗？此操作不可撤销。</p>
-            <div class="modal-buttons">
-                <button class="btn-cancel" id="cancel-delete-btn">取消</button>
-                <button class="secondary" id="confirm-delete-btn">确认删除</button>
-            </div>
-        </div>
-    </div>
-
     <script>
         const controlPanel = document.getElementById('control-panel');
-        const chartWrapper = document.getElementById('chart-wrapper');
         const chartCanvas = document.getElementById('trendChart').getContext('2d');
         const dataManagementTable = document.getElementById('data-management-table');
         const deleteSelectedBtn = document.getElementById('deleteSelectedBtn');
@@ -554,10 +395,6 @@
         const showDifferenceChartBtn = document.getElementById('showDifferenceChartBtn');
         const themeColorPicker = document.getElementById('themeColorPicker');
         const colorPickerBtn = document.getElementById('colorPickerBtn');
-        const deleteModal = document.getElementById('delete-modal');
-        const deleteModalText = document.getElementById('delete-modal-text');
-        const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
-        const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
 
         let tasks = [];
         let currentTask = null;
@@ -629,7 +466,7 @@
             const successMessageDiv = document.createElement('div');
             successMessageDiv.className = 'success-message';
             successMessageDiv.id = 'successMessage';
-            controlPanel.prepend(successMessageDiv);
+            controlPanel.appendChild(successMessageDiv);
 
             if (currentTask) {
                 const expectedEndTime = new Date(currentTask.start + currentTask.expected * 60 * 1000);
@@ -641,7 +478,7 @@
                 
                 statusDiv.innerHTML = `
                     <h2>正在进行...</h2>
-                    <input type="text" id="runningTaskNameInput" placeholder="给事项起个名字吧！" value="${currentTask.name || ''}">
+                    <input type="text" id="runningTaskNameInput" placeholder="给任务起个名字吧！" value="${currentTask.name || ''}">
                     <div class="time-display-container">
                         <div class="time-block">
                             <span class="time-label">开始时间</span>
@@ -659,7 +496,7 @@
                     <p>实时计时: <span id="live-timer">00:00</span></p>
                 `;
                 const stopBtn = document.createElement('button');
-                stopBtn.innerHTML = '<i class="bi bi-stop-circle-fill"></i> 结束事项';
+                stopBtn.innerHTML = '<i class="bi bi-stop-circle-fill"></i> 结束任务';
                 stopBtn.style.marginTop = '15px';
                 stopBtn.onclick = stopTask;
                 
@@ -685,37 +522,20 @@
                 form.className = 'anim-fade-in';
                 form.onsubmit = startTask;
                 form.innerHTML = `
-                    <h2>开始新事项</h2>
+                    <h2>开始新任务</h2>
                     <div class="form-group">
                         <label for="expectedTime">预期用时 (分钟):</label>
                         <input type="number" id="expectedTime" min="0.1" step="0.1" value="10" placeholder="例如: 0.5 代表30秒" required>
                     </div>
-                    <button type="submit"><i class="bi bi-play-circle-fill"></i> 开始事项</button>
+                    <button type="submit"><i class="bi bi-play-circle-fill"></i> 开始任务</button>
                 `;
                 controlPanel.appendChild(form);
             }
         }
 
         function renderChart() {
-            if (tasks.length === 0) {
-                chartWrapper.innerHTML = `
-                    <div class="empty-state anim-fade-in">
-                        <i class="bi bi-graph-up"></i>
-                        <p>完成第一个事项后，这里会展示您的时间趋势图！</p>
-                    </div>
-                `;
-                if (trendChart) {
-                    trendChart.destroy();
-                    trendChart = null;
-                }
-                return;
-            }
-
-            chartWrapper.innerHTML = '<canvas id="trendChart"></canvas>';
-            const newChartCanvas = document.getElementById('trendChart').getContext('2d');
-
             if (trendChart) { trendChart.destroy(); }
-            const labels = tasks.map((task, index) => task.name || `事项 ${index + 1}`);
+            const labels = tasks.map((task, index) => task.name || `任务 ${index + 1}`);
             const chartTextColor = getComputedStyle(document.documentElement).getPropertyValue('--secondary-text-color');
             
             let chartData, chartOptions;
@@ -797,7 +617,7 @@
                 }
             };
 
-            trendChart = new Chart(newChartCanvas, {
+            trendChart = new Chart(chartCanvas, {
                 type: 'line',
                 data: chartData,
                 options: { ...commonOptions, ...chartOptions, scales: { ...commonOptions.scales, ...chartOptions.scales }}
@@ -805,22 +625,12 @@
         }
         
         function renderDataTable() {
-            if (tasks.length === 0) {
-                dataManagementTable.innerHTML = `
-                    <div class="empty-state anim-fade-in">
-                        <i class="bi bi-table"></i>
-                        <p>这里会显示您所有的事项记录。</p>
-                    </div>
-                `;
-                return;
-            }
-
             let tableHTML = `
                 <table>
                     <thead>
                         <tr>
                             <th><input type="checkbox" id="selectAllCheckbox" title="全选/全不选"></th>
-                            <th>事项名称</th>
+                            <th>任务名称</th>
                             <th>预期用时</th>
                             <th>实际用时</th>
                             <th>差值</th>
@@ -830,21 +640,17 @@
             tasks.forEach((task, index) => {
                 const formattedDifference = formatMinutesAndSeconds(task.difference);
                 const formattedExpected = formatMinutesAndSeconds(task.expected);
-                // --- MODIFIED: Added span and icon to the editable cell ---
                 tableHTML += `
                     <tr>
                         <td><input type="checkbox" class="delete-checkbox" data-index="${index}"></td>
-                        <td class="editable" data-index="${index}">
-                            <span>${task.name}</span>
-                            <i class="bi bi-pencil-square edit-icon"></i>
-                        </td>
+                        <td>${task.name}</td>
                         <td>${formattedExpected}</td>
                         <td>${task.actualFormatted}</td>
                         <td>${formattedDifference}</td>
                     </tr>`;
             });
             tableHTML += `</tbody></table>`;
-            dataManagementTable.innerHTML = tableHTML;
+            dataManagementTable.innerHTML = tableHTML || "<p>暂无历史记录。</p>";
             
             const selectAllCheckbox = document.getElementById('selectAllCheckbox');
             if (selectAllCheckbox) {
@@ -858,8 +664,10 @@
         
         function updateUI() {
             renderControlPanel();
-            renderChart();
-            renderDataTable();
+            if (tasks.length > 0) {
+                renderChart();
+                renderDataTable();
+            }
         }
         
         function startTask(event) {
@@ -909,30 +717,20 @@
             const formattedDifference = formatMinutesAndSeconds(difference);
             const formattedExpected = formatMinutesAndSeconds(currentTask.expected);
             
-            const timeDiffClass = Math.abs(errorPercentage) <= 10 ? 'time-diff-highlight' : '';
-
             const successMessage = `
-                <div class="success-header">
-                    <i class="bi bi-check-circle-fill"></i>
-                    <h4>事项 "${taskName}" 已记录!</h4>
-                </div>
-                <div class="success-details">
-                    <div class="detail-row">
-                        <span class="detail-label">预期用时</span>
-                        <span class="detail-value">${formattedExpected}</span>
+                <p><b>任务 "${taskName}" 已记录!</b></p>
+                <div class="time-display-container">
+                    <div class="time-block">
+                        <span class="time-label">开始时间</span>
+                        <span class="time-value">${formatDateTime(startTime)}</span>
                     </div>
-                    <div class="detail-row">
-                        <span class="detail-label">实际用时</span>
-                        <span class="detail-value">${formattedDuration}</span>
-                    </div>
-                    <div class="detail-row ${timeDiffClass}">
-                        <span class="detail-label">
-                            <i class="bi ${difference <= 0 ? 'bi-graph-down-arrow' : 'bi-graph-up-arrow'}"></i>
-                            时间差
-                        </span>
-                        <span class="detail-value">${difference > 0 ? '+' : ''}${formattedDifference} (${errorPercentage > 0 ? '+' : ''}${formattedPercentage})</span>
+                    <div class="time-block">
+                        <span class="time-label">结束时间</span>
+                        <span class="time-value">${formatDateTime(endTime)}</span>
                     </div>
                 </div>
+                <p>预期: ${formattedExpected} | 实际: ${formattedDuration}</p>
+                <p>时间差: ${formattedDifference} (百分比差: ${errorPercentage > 0 ? '+' : ''}${formattedPercentage})</p>
             `;
             
             document.title = '时间追踪器';
@@ -943,7 +741,6 @@
             const successDiv = document.getElementById('successMessage');
             successDiv.innerHTML = successMessage;
             successDiv.style.display = 'block';
-            successDiv.classList.add('anim-fade-in');
         }
 
         function deleteSelectedTasks() {
@@ -955,15 +752,11 @@
                 return;
             }
 
-            deleteModalText.textContent = `您确定要删除选中的 ${indicesToDelete.length} 条记录吗？此操作不可撤销。`;
-            deleteModal.classList.add('visible');
-
-            confirmDeleteBtn.onclick = () => {
+            if (confirm(`您确定要删除选中的 ${indicesToDelete.length} 条记录吗？此操作不可撤销。`)) {
                 tasks = tasks.filter((_, index) => !indicesToDelete.includes(index));
                 saveData();
                 updateUI();
-                deleteModal.classList.remove('visible');
-            };
+            }
         }
         
         function startLiveTimer() {
@@ -990,7 +783,7 @@
             const formattedTime = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
             
             liveTimerElement.textContent = formattedTime;
-            document.title = `${formattedTime} - ${currentTask.name || '(未命名事项)'}`;
+            document.title = `${formattedTime} - ${currentTask.name || '(未命名任务)'}`;
         }
         
         function hexToRgb(hex) {
@@ -1036,8 +829,6 @@
             renderChart();
         });
         
-        deleteSelectedBtn.addEventListener('click', deleteSelectedTasks);
-
         colorPickerBtn.addEventListener('click', () => {
             themeColorPicker.click();
         });
@@ -1049,57 +840,12 @@
         themeColorPicker.value = savedThemeColor || '#ff9900';
         applyThemeColor(themeColorPicker.value);
 
-        cancelDeleteBtn.addEventListener('click', () => {
-            deleteModal.classList.remove('visible');
-        });
-
-        // --- MODIFIED: More robust click handler for editing ---
-        dataManagementTable.addEventListener('click', (event) => {
-            const cell = event.target.closest('.editable');
-            if (cell) {
-                if (cell.querySelector('input')) {
-                    return; // Already in edit mode
-                }
-
-                const textSpan = cell.querySelector('span');
-                const originalText = textSpan.textContent;
-                const index = parseInt(cell.dataset.index);
-
-                const input = document.createElement('input');
-                input.type = 'text';
-                input.value = originalText;
-                input.style.width = '100%';
-                input.style.boxSizing = 'border-box';
-                
-                cell.innerHTML = '';
-                cell.appendChild(input);
-                input.focus();
-
-                const saveChanges = () => {
-                    const newName = input.value.trim();
-                    if (newName && newName !== originalText) {
-                        tasks[index].name = newName;
-                        saveData();
-                    }
-                    renderDataTable();
-                };
-
-                input.addEventListener('blur', saveChanges);
-                input.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter') {
-                        input.blur();
-                    } else if (e.key === 'Escape') {
-                        renderDataTable();
-                    }
-                });
-            }
-        });
 
         loadData();
         updateUI();
 
         document.addEventListener('DOMContentLoaded', () => {
-            const elementsToAnimate = document.querySelectorAll('details');
+            const elementsToAnimate = document.querySelectorAll('.container, details');
             elementsToAnimate.forEach((el, index) => {
                 el.style.animation = `fadeIn 0.5s ${index * 0.07}s ease-out forwards`;
                 el.style.opacity = 0;
