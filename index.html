@@ -370,6 +370,28 @@
             transform: scale(0.9);
         }
 
+        /* --- MODIFIED: Styles for the color picker wrapper --- */
+        .color-picker-wrapper {
+            position: relative;
+            width: 27px; /* Match icon button size */
+            height: 27px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #colorPickerBtn {
+            pointer-events: none; /* The button underneath is not clickable */
+        }
+        #themeColorPicker {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0; /* Make it invisible */
+            cursor: pointer;
+        }
+
         @keyframes pulse-glow {
             0% {
                 box-shadow: 0 0 0 0 rgba(var(--primary-color-rgb), 0.4);
@@ -478,7 +500,6 @@
             background-color: #444;
         }
 
-        /* --- NEW: Styles for the guide --- */
         .guide-content {
             padding: 0 20px 20px 20px;
             color: var(--secondary-text-color);
@@ -515,20 +536,22 @@
     <div class="header-container">
         <h1><i class="bi bi-stopwatch-fill"></i> 时间追踪器</h1>
         <div class="theme-switch-wrapper">
-            <button id="colorPickerBtn" class="icon-button" title="选择主题色">
-                <i class="bi bi-palette-fill"></i>
-            </button>
-            <input type="color" id="themeColorPicker" value="#ff9900" style="display: none;">
+            <!-- --- MODIFIED: Wrapped color picker elements --- -->
+            <div class="color-picker-wrapper" title="选择主题色">
+                <button id="colorPickerBtn" class="icon-button">
+                    <i class="bi bi-palette-fill"></i>
+                </button>
+                <input type="color" id="themeColorPicker" value="#ff9900">
+            </div>
         </div>
     </div>
 
-    <!-- --- NEW: User Guide Section --- -->
     <details>
         <summary><i class="bi bi-info-circle-fill"></i> 使用指南</summary>
         <div class="guide-content">
             <h4>这是什么？</h4>
             <p>
-                这是一个帮助你<strong>训练时间感</strong>的工具。通过不断地预估和记录，你会对自己处理各项事务所需的时间有更精准的把握，最终对生活和工作更加有<strong>掌控感</strong>。
+                这是一个帮助你<strong>训练时间感</strong>的工具。通过不断地预估和记录，你会对自己处理各项事务所需要的时间有更精准的把握，最终让生活和工作变得<strong>有条不紊</strong>。
             </p>
             <h4>如何使用？</h4>
             <ul>
@@ -1080,9 +1103,6 @@
         
         deleteSelectedBtn.addEventListener('click', deleteSelectedTasks);
 
-        colorPickerBtn.addEventListener('click', () => {
-            themeColorPicker.click();
-        });
         themeColorPicker.addEventListener('input', (event) => {
             applyThemeColor(event.target.value);
         });
